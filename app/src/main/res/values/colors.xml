@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4bb6d7</color>
+    <color name="colorPrimaryDark">#2075b9</color>
+    <color name="colorAccent">#5d72d9</color>
+
+    <color name="admin">#46c138</color>
+    <color name="hidden">#fa0613</color>
+    <color name="list_normal">#000</color>
+
+    <color name="disabled">#AEABAB</color>
+
+</resources>

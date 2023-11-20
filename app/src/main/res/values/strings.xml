@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FileManager</string>
+    <string name="browse">Browse</string>
+    <string name="duplicates">Duplicates</string>
+</resources>
