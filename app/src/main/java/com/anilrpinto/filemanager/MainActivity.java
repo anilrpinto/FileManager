@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,13 +26,16 @@ import com.anilrpinto.filemanager.utils.FileManager;
 import com.anilrpinto.filemanager.utils.FileUtils;
 import com.anilrpinto.filemanager.utils.Utility;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     private List<String> dirs = new ArrayList<>();
+
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,38 +59,66 @@ public class MainActivity extends AppCompatActivity {
         TextView txvDupCount = findViewById(R.id.txvDupCount);
         TextView txvDupSize = findViewById(R.id.txvDupSize);
 
-        findViewById(R.id.btnFindDuplicates).setOnClickListener(view -> {
-            try {
-                FileManager.sort(dirs, ((CheckBox) findViewById(R.id.chbxIncludeSubFldrs)).isChecked(),
+        Button btnFindDuplicates = findViewById(R.id.btnFindDuplicates);
+
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        TextView txvProgress = findViewById(R.id.txvProgress);
+
+        btnFindDuplicates.setOnClickListener(view -> {
+
+            btnFindDuplicates.setText("Processing...");
+
+            executor.execute(() -> {
+                try {
+                    FileManager.sort(dirs, ((CheckBox) findViewById(R.id.chbxIncludeSubFldrs)).isChecked(),
                         ((CheckBox) findViewById(R.id.chbxImagesOnly)).isChecked(), (code, data) -> {
 
-                    switch (code) {
+                            runOnUiThread(() -> {
+                                switch (code) {
 
-                        case "files-count" :
-                            txvFilesCount.setText(String.valueOf(data));
-                            break;
+                                    case "files-count":
+                                        txvFilesCount.setText(String.valueOf(data));
+                                        break;
 
-                        case "files-size" :
-                            txvFilesSize.setText((String) data);
-                            break;
+                                    case "files-size":
+                                        txvFilesSize.setText((String) data);
+                                        break;
 
-                        case "dup-count" :
-                            txvDupCount.setText(String.valueOf(data));
-                            break;
+                                    case "dup-count":
+                                        txvDupCount.setText(String.valueOf(data));
+                                        break;
 
-                        case "dup-size" :
-                            txvDupSize.setText((String) data);
-                            break;
+                                    case "dup-size":
+                                        txvDupSize.setText((String) data);
+                                        break;
 
-                        default :
-                            Log.d("TAG", "Unhandled event code:" + code);
-                    }
+                                    case "start":
+                                        progressBar.setMax((int) data);
+                                        break;
 
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
+                                    case "progress":
+                                        progressBar.setProgress((int) data);
+                                        break;
+
+                                    case "current":
+                                        txvProgress.setText((String) data);
+                                        break;
+
+                                    case "done":
+                                        btnFindDuplicates.setText("Duplicates");
+                                        txvProgress.setText(null);
+                                        break;
+
+                                    default:
+                                        Log.d("TAG", "Unhandled event code:" + code);
+                                }
+                            });
+                        });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
         if (!Environment.isExternalStorageManager()) {
