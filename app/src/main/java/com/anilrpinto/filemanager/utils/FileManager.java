@@ -1,5 +1,7 @@
 package com.anilrpinto.filemanager.utils;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -26,6 +28,8 @@ public class FileManager {
     private static HashMap<Long, List<File>> grouped = new HashMap<>();
 
     private static long count = 0;
+
+    private static long delete = 0;
 
     private static BigInteger size = BigInteger.valueOf(0);
 
@@ -164,6 +168,39 @@ public class FileManager {
         }
 
         return true;
+    }
+
+    public static void deleteDirs(List<String> dirs, ProgressListener listener) {
+        count = 0;
+        delete = 0;
+
+        for (String path : dirs) {
+            File dir = Paths.get(path).toFile();
+            processForDelete(false, dir, dir.listFiles(), listener);
+        }
+
+        listener.update("done", null);
+    }
+
+    private static void processForDelete(boolean child, File dir, File[] items, ProgressListener listener) {
+
+        for (File i : items) {
+            listener.update("files-count", ++count);
+            if (i.isDirectory()) {
+                File[] files = i.listFiles();
+                if (files.length == 0) {
+                    i.delete();
+                    listener.update("delete-count", ++delete);
+                    listener.update("current", i.getAbsolutePath());
+                } else
+                    processForDelete(true, i, files, listener);
+            }
+        }
+
+        if (child && dir.list().length == 0) {
+            dir.delete();
+            listener.update("delete-count", ++delete);
+        }
     }
 
     public interface ProgressListener {

@@ -37,37 +37,56 @@
 
 
         </androidx.appcompat.widget.Toolbar>
+
     </com.google.android.material.appbar.AppBarLayout>
 
 
     <Button
-        android:id="@+id/btnFindDuplicates"
-        android:layout_width="0dp"
+        android:id="@+id/btnEmptyDirs"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:height="30dp"
+        android:text="@string/remove_empty"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnBrowse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <Button
+        android:id="@+id/btnFindDuplicates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
         android:height="30dp"
         android:text="@string/duplicates"
         android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnBrowse"
+        app:layout_constraintBottom_toBottomOf="@+id/btnEmptyDirs"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnEmptyDirs" />
+
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="104dp"
+        android:height="30dp"
+        android:text="Clear"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/chbxIncludeSubFldrs"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/btnEmptyDirs" />
 
     <Button
         android:id="@+id/btnBrowse"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="44dp"
         android:height="30dp"
         android:text="@string/browse"
         android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/chbxIncludeSubFldrs"
+        app:layout_constraintBottom_toTopOf="@+id/chbxImagesOnly"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnFindDuplicates" />
 
     <CheckBox
@@ -88,15 +107,15 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
         android:text="Images only"
-        app:layout_constraintBottom_toTopOf="@+id/lstvSourceDirs"
+        app:layout_constraintBottom_toBottomOf="@+id/chbxIncludeSubFldrs"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBrowse"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="@+id/chbxIncludeSubFldrs"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ListView
         android:id="@+id/lstvSourceDirs"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="350dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:divider="@color/colorPrimary"
@@ -136,8 +155,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
-            android:textSize="10sp"
             android:textColor="@color/black"
+            android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progressBar" />
@@ -150,7 +169,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="16dp"
-            android:text="Files checked"
+            android:text="Checked"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.4"
             app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +192,6 @@
             style="@style/detailsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="0 MB"
             app:layout_constraintEnd_toEndOf="parent"
@@ -209,7 +227,6 @@
             style="@style/detailsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="0 MB"
             app:layout_constraintEnd_toEndOf="parent"
