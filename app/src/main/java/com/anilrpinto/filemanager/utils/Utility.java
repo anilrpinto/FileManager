@@ -8,9 +8,9 @@ public class Utility {
             return text;
 
         int diff = (text.length() - length)/2;
-        int mid = text.length()/2;
+        int mid = text.length()/2 - 5;
 
-        return text.substring(0, mid-diff) + "..." + text.substring(mid+diff);
+        return text.substring(0, mid-diff) + "./." + text.substring(mid+diff);
     }
 
 }

@@ -5,7 +5,6 @@ import static android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMI
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +31,7 @@ import com.anilrpinto.filemanager.utils.Utility;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Map<String, Boolean> map = new HashMap<>();
+    private Map<String, Boolean> map = new LinkedHashMap<>();
 
     private List<String> dirs = new ArrayList<>();
 
@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
         ListView lstvSourceDirs = findViewById(R.id.lstvSourceDirs);
         lstvSourceDirs.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_list_item_checked, dirs);
+        CustomAdapter adapter = new CustomAdapter(this, R.layout.list_textview, dirs);
         lstvSourceDirs.setAdapter(adapter);
 
         lstvSourceDirs.setOnItemClickListener((parent, view, position, id) -> {
-            map.put(dirs.get(position), ((CheckedTextView) view).isChecked());
+            map.put(dirs.get(position), !((boolean) view.getTag()));
             adapter.notifyDataSetChanged();
         });
 
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(Intent.createChooser(i, "Choose directory"), 100);
         });
 
+        TextView txvDirCount = findViewById(R.id.txvDirCount);
         TextView txvFilesCount = findViewById(R.id.txvFilesCount);
         TextView txvFilesSize = findViewById(R.id.txvFilesSize);
 
@@ -113,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             switch (code) {
 
-                                case "files-count":
-                                    txvFilesCount.setText(String.valueOf(data));
+                                case "dir-count":
+                                    txvDirCount.setText(String.valueOf(data));
                                     break;
 
                                 case "delete-count":
@@ -155,11 +156,15 @@ public class MainActivity extends AppCompatActivity {
 
             executor.execute(() -> {
                 try {
-                    FileManager.sort(dirs, ((CheckBox) findViewById(R.id.chbxIncludeSubFldrs)).isChecked(),
+                    FileManager.sort(map.keySet(), ((CheckBox) findViewById(R.id.chbxIncludeSubFldrs)).isChecked(),
                         ((CheckBox) findViewById(R.id.chbxImagesOnly)).isChecked(), (code, data) -> {
 
                             runOnUiThread(() -> {
                                 switch (code) {
+
+                                    case "dir-count":
+                                        txvDirCount.setText(String.valueOf(data));
+                                        break;
 
                                     case "files-count":
                                         txvFilesCount.setText(String.valueOf(data));
@@ -239,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class CustomAdapter extends ArrayAdapter<String> {
 
-        private int origColor = Color.TRANSPARENT;
+        int SELECTED = getResources().getColor(R.color.selection);
 
         public CustomAdapter(@NonNull Context context, int resId, List<String> list) {
 
@@ -251,33 +256,21 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            CheckedTextView textView = (CheckedTextView) super.getView(position, convertView, parent);
+            TextView textView = (TextView) super.getView(position, convertView, parent);
             String data = getItem(position);
 
-            boolean checked = map.get(dirs.get(position));
-
-            Log.d("", "checked:" + checked);
-
-            Log.d("", "checked2:" + textView.isChecked());
-
-            if (checked != textView.isChecked()) {
-                textView.setChecked(checked);
-                notifyDataSetChanged();
-            }
-
+            boolean selected = map.get(data);
+            textView.setTag(selected);
 
             if (position == 0)
                 textView.setBackgroundColor(Color.LTGRAY);
             else {
-
-                if (map.get(data)) {
-                    //origColor = ((ColorDrawable) textView.getBackground()).getColor();
-                    textView.setBackgroundColor(Color.YELLOW);
-                    //textView.setChecked(map.get(data));
+                if (selected) {
+                    textView.setBackgroundColor(SELECTED);
                 } else
-                    textView.setBackgroundColor(Color.RED);
+                    textView.setBackgroundColor(Color.TRANSPARENT);
             }
-            textView.setText(Utility.truncate(data, 25));
+            textView.setText(Utility.truncate(data, 32));
             return textView;
         }
     }

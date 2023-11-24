@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 public class FileManager {
@@ -27,13 +28,15 @@ public class FileManager {
 
     private static HashMap<Long, List<File>> grouped = new HashMap<>();
 
-    private static long count = 0;
+    private static long dirCount = 0;
+
+    private static long fileCount = 0;
 
     private static long delete = 0;
 
     private static BigInteger size = BigInteger.valueOf(0);
 
-    public static void sort(List<String> dirs, boolean recurse, boolean imagesOnly, ProgressListener listener) throws Exception {
+    public static void sort(Set<String> dirs, boolean recurse, boolean imagesOnly, ProgressListener listener) throws Exception {
 
         File main = null;
 
@@ -41,17 +44,20 @@ public class FileManager {
 
             File dir = Paths.get(path).toFile();
 
+            Log.d("", dir.getAbsolutePath());
+
             if (main == null)
                 main = dir;
 
             File[] files = getFiles(dir, recurse, imagesOnly);
 
-            count += files.length;
+            //count += files.length;
 
-            size = size.add(process(files, recurse, imagesOnly, size));
+            size = size.add(process(files, recurse, imagesOnly, size, listener));
         }
 
-        listener.update("files-count", count);
+        listener.update("dir-count", dirCount);
+        listener.update("files-count", fileCount);
         listener.update("files-size", asSize(size));
 
         System.out.println("Sorted size:" + grouped.size());
@@ -61,15 +67,20 @@ public class FileManager {
         listener.update("done", null);
     }
 
-    private static BigInteger process(File[] files, boolean recurse, boolean imagesOnly, BigInteger size) {
+    private static BigInteger process(File[] files, boolean recurse, boolean imagesOnly, BigInteger size, ProgressListener listener) {
         for (File f : files) {
 
-            if (f.isDirectory())
-                size = process(getFiles(f, recurse, imagesOnly), recurse, imagesOnly, size);
-            else {
+            if (f.isDirectory()) {
+                listener.update("dir-count", ++dirCount);
+                size = process(getFiles(f, recurse, imagesOnly), recurse, imagesOnly, size, listener);
+            } else {
+
+                listener.update("files-count", ++fileCount);
+
                 long key = f.length();
 
                 size = size.add(BigInteger.valueOf(key));
+                listener.update("files-size", asSize(size));
 
                 List<File> names = grouped.get(key);
 
@@ -171,7 +182,7 @@ public class FileManager {
     }
 
     public static void deleteDirs(List<String> dirs, ProgressListener listener) {
-        count = 0;
+        dirCount = 0;
         delete = 0;
 
         for (String path : dirs) {
@@ -185,7 +196,7 @@ public class FileManager {
     private static void processForDelete(boolean child, File dir, File[] items, ProgressListener listener) {
 
         for (File i : items) {
-            listener.update("files-count", ++count);
+            listener.update("dir-count", ++dirCount);
             if (i.isDirectory()) {
                 File[] files = i.listFiles();
                 if (files.length == 0) {

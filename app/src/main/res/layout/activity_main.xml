@@ -116,8 +116,8 @@
         android:id="@+id/lstvSourceDirs"
         android:layout_width="0dp"
         android:layout_height="350dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:divider="@color/colorPrimary"
         android:dividerHeight="1dp"
         app:layout_constraintBottom_toTopOf="@+id/detailsLayout"
@@ -176,22 +176,35 @@
             app:layout_constraintTop_toBottomOf="@+id/txvProgress" />
 
         <TextView
-            android:id="@+id/txvFilesCount"
+            android:id="@+id/txvDirCount"
             style="@style/detailsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:text="--"
+            app:layout_constraintBottom_toBottomOf="@+id/txvFilesCount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txvFilesHdr" />
+
+        <TextView
+            android:id="@+id/txvFilesCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="124dp"
             android:layout_marginTop="8dp"
             android:text="--"
-            app:layout_constraintBottom_toBottomOf="@+id/txvFilesSize"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/txvFilesSize" />
+            app:layout_constraintEnd_toStartOf="@+id/txvFilesSize"
+            app:layout_constraintHorizontal_bias="0.229"
+            app:layout_constraintStart_toEndOf="@+id/txvDirCount"
+            app:layout_constraintTop_toBottomOf="@+id/txvFilesHdr" />
 
         <TextView
             android:id="@+id/txvFilesSize"
             style="@style/detailsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:text="0 MB"
             app:layout_constraintEnd_toEndOf="parent"
@@ -208,7 +221,7 @@
             android:text="Duplicates"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txvFilesCount" />
+            app:layout_constraintTop_toBottomOf="@+id/txvDirCount" />
 
         <TextView
             android:id="@+id/txvDupCount"
